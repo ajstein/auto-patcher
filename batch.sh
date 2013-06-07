@@ -1,7 +1,7 @@
 #!/bin/bash
 
 abspath () {
-	case `uname -s` in
+	case $(uname -s) in
 	CYGWIN*)
 		echo $(cygpath -ua "$1") | sed 's:/$::g'
 		;;
@@ -25,7 +25,7 @@ abspath () {
 }
 
 extpath () {
-	case `uname -s` in
+	case $(uname -s) in
 	CYGWIN*)
 		echo $(cygpath -da "$1")
 		;;
@@ -34,7 +34,7 @@ extpath () {
 		;;
 	esac
 }
-ROOT=$(abspath `dirname "$0"`)
+ROOT=$(abspath $(dirname "$0"))
 ROM=$(abspath "$1")
 ROMX=$(extpath "$1")
 
