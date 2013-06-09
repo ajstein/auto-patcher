@@ -901,6 +901,29 @@ echo "Patches are $PID/$ANDR/$RID/$BID" >> "$LOG"
 
 }
 
+# Put the variable config outside of the bash source construct so variables
+# are accessible when file is source OR directly executed.
+#ROOT="$(abspath "$(dirname "$(abspath "$(type -p "$0")")")")"
+if [[ ! "$BASH_SOURCE" == "$0" ]]; then
+    # Script is being sourced, not directly executed, must make 
+    ROOT="$(abspath "$(dirname "$(abspath "$(type -p "${BASH_SOURCE[0]}")")")")"
+else
+    # Script is executing directly, $0 builtin acceptable
+    ROOT="$(abspath "$(dirname "$(abspath "$(type -p "$0")")")")"
+fi
+TOOL="$ROOT/patch_tools.tgz"
+PTCH="$ROOT/patch_patches.tgz"
+DATE=$(date +%Y%m%d%H%M%S)
+TEMP="$ROOT/tmp$DATE"
+TMP="$ROOT/tmp$DATE"
+TMPDIR="$ROOT/tmp$DATE"
+ROM=$(abspath "$1")
+ROMX=$(extpath "$1")
+
+
+# Allow wrapper to determine if script is directly excecuted or sourced from
+# batch.sh bootstrap script.
+if [[ "$BASH_SOURCE" == "$0" ]]; then
 if [[ $1 == -h ]]; then
      if [ $# -gt 1 ]; then
           PID=$2
@@ -937,18 +960,8 @@ echo "The Auto-Patcher $VERSION"
 echo ""
 # by pastime1971 and mateorod
 
-ROOT="$(abspath "$(dirname "$(abspath "$(type -p "$0")")")")"
-TOOL="$ROOT/patch_tools.tgz"
-PTCH="$ROOT/patch_patches.tgz"
 cleanup
-# set temporaray directory
-DATE=$(date +%Y%m%d%H%M%S)
-TEMP="$ROOT/tmp$DATE"
-TMP="$ROOT/tmp$DATE"
-TMPDIR="$ROOT/tmp$DATE"
 mkdir "$TEMP"
-ROM=$(abspath "$1")
-ROMX=$(extpath "$1")
 
 if [[ $OSTYPE == "cygwin" ]]; then
      EXE=".exe"
@@ -1602,3 +1615,6 @@ done
 
 cd ..
 \rm -rf "$TEMP"
+
+# End of bash_source if wrap
+fi
