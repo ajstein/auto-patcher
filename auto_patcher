@@ -901,6 +901,18 @@ echo "Patches are $PID/$ANDR/$RID/$BID" >> "$LOG"
 
 }
 
+prep_patches () {
+
+    echo "Did not detect patch_tools, preparing"
+    cd "$ROOT/patch_tools"
+    tar cvzf ../patch_tools.tgz *.jar updatecert.pem updatekey.pk8 boot cygwin mac linux
+
+    echo "Did not detect patches, preparing"
+    cd "$ROOT"
+    tar cvzf patch_patches.tgz patches
+    zip autopatcher.zip auto_patcher patch_tools.tgz patch_patches.tgz
+}
+
 # Put the variable config outside of the bash source construct so variables
 # are accessible when file is source OR directly executed.
 #ROOT="$(abspath "$(dirname "$(abspath "$(type -p "$0")")")")"
@@ -990,6 +1002,9 @@ which tar >> "$LOG" || misstools_error "Missing \"tar\" utility"
 which jar >> "$LOG" || misstools_error "Missing \"Java Development Kit\" (JDK)"
 which java >> "$LOG" || misstools_error "Missing \"Java Development Kit\" (JDK)"
 which cpio >> "$LOG" || misstools_error "Missing \"cpio\" utility"
+if [[ ! (-f "$TOOL" || -f "$PTCH") ]]; then
+    prep_patches
+fi
 [ -f "$TOOL" ] || misspatch_error "patch_tool.tgz is missing"
 [ -f "$PTCH" ] || misspatch_error "patch_patches.tgz is missing"
 printtask "### verify ROM ###"
